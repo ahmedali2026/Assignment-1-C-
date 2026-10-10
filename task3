@@ -1,0 +1,371 @@
+using System;
+
+namespace Assignment4
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // يمكنك تجربة أي دالة هنا عبر استدعائها
+            Console.WriteLine("=== Assignment 4 Solutions ===");
+            
+            // مثال لتجربة سؤال مجموع الأرقام:
+            // SumOfDigitsDemo();
+            
+            // مثال لتجربة الـ Struct الخاص بنقاط الـ 2D:
+            // PointDistanceDemo();
+        }
+
+        #region Question 1: Value Type Parameters (By Value vs By Reference)
+        /*
+         * شرح الفرق بين تمرير Value Type (مثل int) بالـ Value وبالـ Reference:
+         * 1. Pass by Value (التمرير بالقيمة - الافتراضي):
+         *    يتم إرسال "نسخة" من القيمة للدالة. أي تعديل يتم داخل الدالة لا يؤثر على المتغير الأصلي في الخارج.
+         * 2. Pass by Reference (التمرير بالمرجع باستخدام كلمة ref):
+         *    يتم إرسال عنوان الذاكرة (Memory Address) الخاص بالميتغير الأصلي. أي تعديل داخل الدالة سينعكس مباشرة على المتغير الأصلي.
+         */
+
+        public static void ValueTypeDemo()
+        {
+            int originalVal = 10;
+            
+            // By Value:
+            ModifyByValue(originalVal);
+            Console.WriteLine(originalVal); // النتيجة ستظل 10
+
+            // By Reference:
+            ModifyByReference(ref originalVal);
+            Console.WriteLine(originalVal); // النتيجة ستصبح 20
+        }
+
+        static void ModifyByValue(int x)
+        {
+            x = 20;
+        }
+
+        static void ModifyByReference(ref int x)
+        {
+            x = 20;
+        }
+        #endregion
+
+        #region Question 2: Reference Type Parameters (By Value vs By Reference)
+        /*
+         * شرح الفرق بين تمرير Reference Type (مثل Class أو Array) بالـ Value وبالـ Reference:
+         * 1. Pass by Value:
+         *    يتم تمرير نسخة من "عنوان" الكائن. إذا قامت الدالة بتعديل محتويات الكائن (مثل تعديل قيمة داخله)، سيتأثر الكائن الأصلي.
+         *    ولكن لو قامت الدالة بإنشاء كائن جديد (using new)، فإن المتغير الأصلي لن يتأثر.
+         * 2. Pass by Reference (باستخدام ref):
+         *    يتم تمرير المرجع نفسه، مما يسمح للدالة بتغيير الكائن بالكامل وجعل المتغير الأصلي يشير إلى كائن جديد.
+         */
+
+        public class MyClass { public int Value = 5; }
+
+        public static void RefTypeDemo()
+        {
+            MyClass obj = new MyClass();
+            obj.Value = 5;
+
+            // By Value (تعديل المحتوى يؤثر، لكن تغيير المرجع لا يؤثر)
+            ChangeRefTypeContent(obj);
+            Console.WriteLine(obj.Value); // 10
+
+            // By Reference (يسمح بتغيير الكائن بالكامل)
+            ChangeRefTypeReference(ref obj);
+        }
+
+        static void ChangeRefTypeContent(MyClass c)
+        {
+            c.Value = 10; // يؤثر على الأصل
+        }
+
+        static void ChangeRefTypeReference(ref MyClass c)
+        {
+            c = new MyClass();
+            c.Value = 100; // يغير المرجع بالكامل
+        }
+        #endregion
+
+        #region Question 3: Summation and Subtracting Function
+        // دالة تأخذ 4 معاملات وترجع مجموع وطرح رقمين (مثال: نجمع أول اثنين ونطرح آخر اثنين أو حسب المطلوب)
+        static void CalcSumAndSubtract(int a, int b, int c, int d, out int sum, out int subtract)
+        {
+            sum = a + b;
+            subtract = c - d;
+        }
+        #endregion
+
+        #region Question 4: Sum of Individual Digits
+        public static void SumOfDigitsDemo()
+        {
+            Console.Write("Enter a number: ");
+            if (int.TryParse(Console.ReadLine(), out int num))
+            {
+                int result = CalculateSumOfDigits(num);
+                Console.WriteLine($"The sum of the digits of the number {num} is: {result}");
+            }
+        }
+
+        static int CalculateSumOfDigits(int n)
+        {
+            int sum = 0;
+            n = Math.Abs(n); // للتعامل مع الأرقام السالبة إن وجدت
+            while (n > 0)
+            {
+                sum += n % 10;
+                n /= 10;
+            }
+            return sum;
+        }
+        #endregion
+
+        #region Question 5: IsPrime Function
+        static bool IsPrime(int number)
+        {
+            if (number <= 1) return false;
+            for (int i = 2; i <= Math.Sqrt(number); i++)
+            {
+                if (number % i == 0) return false;
+            }
+            return true;
+        }
+        #endregion
+
+        #region Question 6: MinMaxArray Using Reference Parameters
+        static void MinMaxArray(int[] array, ref int min, ref int max)
+        {
+            if (array == null || array.Length == 0) return;
+
+            min = array[0];
+            max = array[0];
+
+            foreach (var item in array)
+            {
+                if (item < min) min = item;
+                if (item > max) max = item;
+            }
+        }
+        #endregion
+
+        #region Question 7: Iterative Factorial Function
+        static long CalculateFactorial(int n)
+        {
+            if (n < 0) throw new ArgumentException("Factorial is not defined for negative numbers.");
+            long factorial = 1;
+            for (int i = 1; i <= n; i++)
+            {
+                factorial *= i;
+            }
+            return factorial;
+        }
+        #endregion
+
+        #region Question 8: ChangeChar Function
+        static string ChangeChar(string str, int index, char newChar)
+        {
+            if (string.IsNullOrEmpty(str) || index < 0 || index >= str.Length)
+                return str;
+
+            char[] charArray = str.ToCharArray();
+            charArray[index] = newChar;
+            return new string(charArray);
+        }
+        #endregion
+
+        #region Enum & Struct Section
+
+        // 1. WeekDays Enum Program
+        enum WeekDays
+        {
+            Monday,
+            Tuesday,
+            Wednesday,
+            Thursday,
+            Friday,
+            Saturday,
+            Sunday
+        }
+
+        static void PrintWeekDays()
+        {
+            foreach (var day in Enum.GetValues(typeof(WeekDays)))
+            {
+                Console.WriteLine(day);
+            }
+        }
+
+        // 2. Person Struct & Array
+        struct Person
+        {
+            public string Name { get; set; }
+            public int Age { get; set; }
+
+            public Person(string name, int age)
+            {
+                Name = name;
+                Age = age;
+            }
+        }
+
+        static void PersonArrayDemo()
+        {
+            Person[] persons = new Person[3];
+            persons[0] = new Person("Ahmed", 20);
+            persons[1] = new Person("Ali", 22);
+            persons[2] = new Person("Mohamed", 25);
+
+            foreach (var p in persons)
+            {
+                Console.WriteLine($"Name: {p.Name}, Age: {p.Age}");
+            }
+        }
+
+        // 3. Season Enum & Range
+        enum Season
+        {
+            Spring,
+            Summer,
+            Autumn,
+            Winter
+        }
+
+        static void GetSeasonRange()
+        {
+            Console.Write("Enter season name (Spring, Summer, Autumn, Winter): ");
+            string input = Console.ReadLine();
+
+            if (Enum.TryParse<Season>(input, true, out Season season))
+            {
+                switch (season)
+                {
+                    case Season.Spring:
+                        Console.WriteLine("Spring: March to May");
+                        break;
+                    case Season.Summer:
+                        Console.WriteLine("Summer: June to August");
+                        break;
+                    case Season.Autumn:
+                        Console.WriteLine("Autumn: September to November");
+                        break;
+                    case Season.Winter:
+                        Console.WriteLine("Winter: December to February");
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid season name.");
+            }
+        }
+
+        // 4. Permissions Enum (Flags)
+        [Flags]
+        enum Permissions : byte
+        {
+            Read = 1,
+            Write = 2,
+            Delete = 4,
+            Execute = 8
+        }
+
+        static void PermissionsDemo()
+        {
+            Permissions userPermissions = Permissions.Read;
+
+            // Add Permission (Write)
+            userPermissions |= Permissions.Write;
+
+            // Remove Permission (Read)
+            userPermissions &= ~Permissions.Read;
+
+            // Check if specific permission exists (e.g., Write)
+            bool hasWrite = (userPermissions & Permissions.Write) == Permissions.Write;
+            Console.WriteLine($"Has Write Permission: {hasWrite}");
+        }
+
+        // 5. Colors Enum & Primary Color Check + Point Struct Distance
+        enum Colors
+        {
+            Red,
+            Green,
+            Blue,
+            Yellow,
+            Black
+        }
+
+        static void CheckPrimaryColor()
+        {
+            Console.Write("Enter a color name: ");
+            string input = Console.ReadLine();
+
+            if (Enum.TryParse<Colors>(input, true, out Colors color))
+            {
+                if (color == Colors.Red || color == Colors.Green || color == Colors.Blue)
+                {
+                    Console.WriteLine($"{color} is a primary color.");
+                }
+                else
+                {
+                    Console.WriteLine($"{color} is NOT a primary color.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Unknown color.");
+            }
+        }
+
+        struct Point
+        {
+            public double X { get; set; }
+            public double Y { get; set; }
+
+            public Point(double x, double y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        public static void PointDistanceDemo()
+        {
+            Console.WriteLine("Enter Point 1 (X Y):");
+            string[] p1Input = Console.ReadLine().Split(' ');
+            Point p1 = new Point(double.Parse(p1Input[0]), double.Parse(p1Input[1]));
+
+            Console.WriteLine("Enter Point 2 (X Y):");
+            string[] p2Input = Console.ReadLine().Split(' ');
+            Point p2 = new Point(double.Parse(p2Input[0]), double.Parse(p2Input[1]));
+
+            double distance = Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
+            Console.WriteLine($"Distance between points: {distance:F2}");
+        }
+
+        // 7. Oldest Person from 3 Inputs
+        static void FindOldestPerson()
+        {
+            Person[] persons = new Person[3];
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write($"Enter name for person {i + 1}: ");
+                string name = Console.ReadLine();
+                Console.Write($"Enter age for person {i + 1}: ");
+                int age = int.Parse(Console.ReadLine());
+                persons[i] = new Person(name, age);
+            }
+
+            Person oldest = persons[0];
+            foreach (var p in persons)
+            {
+                if (p.Age > oldest.Age)
+                {
+                    oldest = p;
+                }
+            }
+
+            Console.WriteLine($"The oldest person is {oldest.Name} with age {oldest.Age}.");
+        }
+
+        #endregion
+    }
+}
