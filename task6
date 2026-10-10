@@ -1,0 +1,287 @@
+using System;
+
+namespace Assignment04
+{
+    // ==========================================
+    // First Project: Point3D Class & Sorting
+    // ==========================================
+    class Point3D : IComparable<Point3D>, ICloneable
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+
+        // Constructors with chaining
+        public Point3D() : this(0, 0, 0) { }
+
+        public Point3D(int x) : this(x, 0, 0) { }
+
+        public Point3D(int x, int y) : this(x, y, 0) { }
+
+        public Point3D(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        // Override ToString
+        public override string ToString()
+        {
+            return $"Point Coordinates: ({X}, {Y}, {Z})";
+        }
+
+        // Overriding == operator requires overriding != as well
+        public static bool operator ==(Point3D p1, Point3D p2)
+        {
+            if (ReferenceEquals(p1, p2)) return true;
+            if (p1 is null || p2 is null) return false;
+            return p1.X == p2.X && p1.Y == p2.Y && p1.Z == p2.Z;
+        }
+
+        public static bool operator !=(Point3D p1, Point3D p2)
+        {
+            return !(p1 == p2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Point3D other)
+            {
+                return X == other.X && Y == other.Y && Z == other.Z;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z);
+        }
+
+        // IComparable implementation for sorting based on X then Y
+        public int CompareTo(Point3D other)
+        {
+            if (other == null) return 1;
+            int result = X.CompareTo(other.X);
+            if (result == 0)
+            {
+                result = Y.CompareTo(other.Y);
+            }
+            return result;
+        }
+
+        // ICloneable implementation
+        public object Clone()
+        {
+            return new Point3D(this.X, this.Y, this.Z);
+        }
+    }
+
+    // ==========================================
+    // Second Project: Maths Class (Static Methods)
+    // ==========================================
+    static class Maths
+    {
+        public static double Add(double a, double b) => a + b;
+        public static double Subtract(double a, double b) => a - b;
+        public static double Multiply(double a, double b) => a * b;
+        public static double Divide(double a, double b)
+        {
+            if (b == 0) throw new DivideByZeroException("Cannot divide by zero.");
+            return a / b;
+        }
+    }
+
+    // ==========================================
+    // Third Project: Duration Class & Operators
+    // ==========================================
+    class Duration
+    {
+        public int Hours { get; set; }
+        public int Minutes { get; set; }
+        public int Seconds { get; set; }
+
+        public Duration(int hours, int minutes, int seconds)
+        {
+            Hours = hours;
+            Minutes = minutes;
+            Seconds = seconds;
+            Normalize();
+        }
+
+        public Duration(int totalSeconds)
+        {
+            Hours = totalSeconds / 3600;
+            totalSeconds %= 3600;
+            Minutes = totalSeconds / 60;
+            Seconds = totalSeconds % 60;
+        }
+
+        private void Normalize()
+        {
+            if (Seconds >= 60)
+            {
+                Minutes += Seconds / 60;
+                Seconds %= 60;
+            }
+            if (Minutes >= 60)
+            {
+                Hours += Minutes / 60;
+                Minutes %= 60;
+            }
+        }
+
+        private int ToTotalSeconds() => (Hours * 3600) + (Minutes * 60) + Seconds;
+
+        public override string ToString()
+        {
+            if (Hours > 0 && Minutes > 0 && Seconds > 0)
+                return $"Hours: {Hours}, Minutes : {Minutes}, Seconds :{Seconds}";
+            if (Hours > 0 && Minutes == 0 && Seconds == 0)
+                return $"Hours: {Hours}, Minutes : 0, Seconds : 0";
+            if (Hours == 0 && Minutes > 0 && Seconds > 0)
+                return $"Minutes :{Minutes}, Seconds :{Seconds}";
+            if (Hours == 0 && Minutes > 0 && Seconds == 0)
+                return $"Minutes :{Minutes}, Seconds : 0";
+            
+            return $"Hours: {Hours}, Minutes : {Minutes}, Seconds :{Seconds}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Duration d)
+            {
+                return ToTotalSeconds() == d.ToTotalSeconds();
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToTotalSeconds().GetHashCode();
+        }
+
+        // Operators Overloading
+        public static Duration operator +(Duration d1, Duration d2)
+        {
+            return new Duration(d1.ToTotalSeconds() + d2.ToTotalSeconds());
+        }
+
+        public static Duration operator +(Duration d1, int seconds)
+        {
+            return new Duration(d1.ToTotalSeconds() + seconds);
+        }
+
+        public static Duration operator +(int seconds, Duration d1)
+        {
+            return new Duration(d1.ToTotalSeconds() + seconds);
+        }
+
+        public static Duration operator -(Duration d1, Duration d2)
+        {
+            int total = d1.ToTotalSeconds() - d2.ToTotalSeconds();
+            return new Duration(total > 0 ? total : 0);
+        }
+
+        public static Duration operator ++(Duration d)
+        {
+            return new Duration(d.ToTotalSeconds() + 60);
+        }
+
+        public static Duration operator --(Duration d)
+        {
+            int total = d.ToTotalSeconds() - 60;
+            return new Duration(total > 0 ? total : 0);
+        }
+
+        public static bool operator >(Duration d1, Duration d2)
+        {
+            return d1.ToTotalSeconds() > d2.ToTotalSeconds();
+        }
+
+        public static bool operator <(Duration d1, Duration d2)
+        {
+            return d1.ToTotalSeconds() < d2.ToTotalSeconds();
+        }
+
+        public static bool operator >=(Duration d1, Duration d2)
+        {
+            return d1.ToTotalSeconds() >= d2.ToTotalSeconds();
+        }
+
+        public static bool operator <=(Duration d1, Duration d2)
+        {
+            return d1.ToTotalSeconds() <= d2.ToTotalSeconds();
+        }
+
+        public static implicit operator bool(Duration d)
+        {
+            return d.ToTotalSeconds() > 0;
+        }
+
+        public static explicit operator DateTime(Duration d)
+        {
+            return new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, d.Hours, d.Minutes, d.Seconds);
+        }
+    }
+
+    // ==========================================
+    // Main Program Execution
+    // ==========================================
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // --- First Project Demo ---
+            Console.WriteLine("=== First Project Demo ===");
+            Point3D P = new Point3D(10, 10, 10);
+            Console.WriteLine(P.ToString());
+
+            // Array of points and sorting
+            Point3D[] points = {
+                new Point3D(5, 2, 1),
+                new Point3D(1, 9, 3),
+                new Point3D(5, 1, 4)
+            };
+            Array.Sort(points);
+            Console.WriteLine("Sorted Points based on X & Y:");
+            foreach (var pt in points)
+            {
+                Console.WriteLine(pt);
+            }
+
+            // --- Second Project Demo ---
+            Console.WriteLine("\n=== Second Project Demo ===");
+            Console.WriteLine($"Add: {Maths.Add(10, 5)}");
+            Console.WriteLine($"Subtract: {Maths.Subtract(10, 5)}");
+            Console.WriteLine($"Multiply: {Maths.Multiply(10, 5)}");
+            Console.WriteLine($"Divide: {Maths.Divide(10, 5)}");
+
+            // --- Third Project Demo ---
+            Console.WriteLine("\n=== Third Project Demo ===");
+            Duration D1 = new Duration(1, 10, 15);
+            Console.WriteLine(D1.ToString());
+
+            Duration D2 = new Duration(7800);
+            Console.WriteLine(D2.ToString());
+
+            Duration D3 = new Duration(666);
+            Console.WriteLine(D3.ToString());
+
+            // Operators Testing
+            D3 = D1 + D2;
+            D3 = D1 + 7800;
+            D3 = 666 + D3;
+            D3 = ++D1; 
+            D3 = --D2; 
+
+            if (D1 > D2) Console.WriteLine("D1 is greater than D2");
+            if (D1 <= D2) Console.WriteLine("D1 is less than or equal to D2");
+
+            if (D1) Console.WriteLine("D1 has non-zero duration.");
+
+            DateTime Obj = (DateTime)D1;
+            Console.WriteLine($"Converted DateTime: {Obj}");
+        }
+    }
+}
