@@ -1,0 +1,179 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace AssignmentSolutions
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("=== Assignment Solutions ===");
+            // You can test each solution here as needed.
+        }
+
+        #region 1. Optimized Bubble Sort
+        // Optimization: Use a swapped flag. If no swaps occur during a pass, the array is already sorted, 
+        // allowing us to break early and reduce the best-case time complexity to O(n).
+        public static void OptimizedBubbleSort(int[] arr)
+        {
+            int n = arr.Length;
+            bool swapped;
+            for (int i = 0; i < n - 1; i++)
+            {
+                swapped = false;
+                for (int j = 0; j < n - i - 1; j++)
+                {
+                    if (arr[j] > arr[j + 1])
+                    {
+                        // Swap elements
+                        int temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        swapped = true;
+                    }
+                }
+                // If no two elements were swapped in the inner loop, the array is sorted
+                if (!swapped)
+                    break;
+            }
+        }
+        #endregion
+
+        #region 2. Generic Range<T> Class
+        public class Range<T> where T : IComparable<T>
+        {
+            public T Min { get; set; }
+            public T Max { get; set; }
+
+            public Range(T min, T max)
+            {
+                if (min.CompareTo(max) > 0)
+                {
+                    throw new ArgumentException("Minimum value cannot be greater than maximum value.");
+                }
+                Min = min;
+                Max = max;
+            }
+
+            public bool IsInRange(T value)
+            {
+                // value >= Min && value <= Max
+                return value.CompareTo(Min) >= 0 && value.CompareTo(Max) <= 0;
+            }
+
+            public double Length()
+            {
+                // Converting generic IComparable values to double for mathematical difference calculation
+                dynamic minVal = Min;
+                dynamic maxVal = Max;
+                return maxVal - minVal;
+            }
+        }
+        #endregion
+
+        #region 3. Reverse ArrayList In-Place
+        public static void ReverseArrayList(ArrayList list)
+        {
+            if (list == null || list.Count <= 1) return;
+
+            int left = 0;
+            int right = list.Count - 1;
+
+            while (left < right)
+            {
+                object temp = list[left];
+                list[left] = list[right];
+                list[right] = temp;
+
+                left++;
+                right--;
+            }
+        }
+        #endregion
+
+        #region 4. Find Even Numbers from List
+        public static List<int> GetEvenNumbers(List<int> numbers)
+        {
+            List<int> evenNumbers = new List<int>();
+            foreach (var num in numbers)
+            {
+                if (num % 2 == 0)
+                {
+                    evenNumbers.Add(num);
+                }
+            }
+            return evenNumbers;
+        }
+        #endregion
+
+        #region 5. FixedSizeList<T> Class
+        public class FixedSizeList<T>
+        {
+            private List<T> items;
+            public int Capacity { get; private int; }
+            public int Count => items.Count;
+
+            public FixedSizeList(int capacity)
+            {
+                if (capacity <= 0)
+                    throw new ArgumentException("Capacity must be greater than zero.");
+                
+                Capacity = capacity;
+                items = new List<T>(capacity);
+            }
+
+            public void Add(T item)
+            {
+                if (items.Count >= Capacity)
+                {
+                    throw new InvalidOperationException("The list is already full. Cannot add more elements.");
+                }
+                items.Add(item);
+            }
+
+            public T Get(int index)
+            {
+                if (index < 0 || index >= items.Count)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), "Invalid index or index out of bounds.");
+                }
+                return items[index];
+            }
+        }
+        #endregion
+
+        #region 6. First Non-Repeated Character Index
+        public static int FirstNonRepeatingCharIndex(string str)
+        {
+            if (string.IsNullOrEmpty(str)) return -1;
+
+            Dictionary<char, int> charCounts = new Dictionary<char, int>();
+
+            // Count occurrences of each character
+            foreach (char c in str)
+            {
+                if (charCounts.ContainsKey(c))
+                    charCounts[c]++;
+                else
+                    charCounts[c] = 1;
+            }
+
+            // Find the first character with a count of 1
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (charCounts[str[i]] == 1)
+                {
+                    return i;
+                }
+            }
+git status
+git add .
+git commit -m "Add Assignment 1 solutions"
+git push origin main
+
+            return -1;
+        }
+        #endregion
+    }
+}
