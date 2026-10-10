@@ -1,0 +1,220 @@
+using System;
+
+namespace Session07Assignment
+{
+    // ==========================================
+    // Part 1: Static Binding (Method Hiding)
+    // ==========================================
+    class Shape
+    {
+        public double Width { get; set; }
+        public double Height { get; set; }
+
+        public Shape(double width, double height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public double Area()
+        {
+            return Width * Height;
+        }
+
+        public override string ToString()
+        {
+            return $"(Width = {Width}, Height = {Height})";
+        }
+    }
+
+    class Cube : Shape
+    {
+        public double Depth { get; set; }
+
+        public Cube(double width, double height, double depth) : base(width, height)
+        {
+            Depth = depth;
+        }
+
+        // Hiding the base Area() method
+        public new double Area()
+        {
+            return base.Area() * Depth;
+        }
+
+        public void Print()
+        {
+            Console.WriteLine($"Width = {Width}, Height = {Height}, Depth = {Depth}");
+        }
+    }
+
+    // ==========================================
+    // Part 2: Dynamic Binding (Virtual / Override)
+    // ==========================================
+    class Person
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+        // Non-virtual method (can be hidden with new)
+        public void Greet()
+        {
+            Console.WriteLine("I am a Person.");
+        }
+
+        // Virtual method (can be overridden)
+        public virtual void Display()
+        {
+            Console.WriteLine($"ID: {ID}, Name: {Name}, Age: {Age}");
+        }
+    }
+
+    class Doctor : Person
+    {
+        public string Specialty { get; set; }
+
+        // Hiding Greet
+        public new void Greet()
+        {
+            Console.WriteLine("I am a Doctor.");
+        }
+
+        // Overriding Display
+        public override void Display()
+        {
+            base.Display();
+            Console.WriteLine($"Specialty: {Specialty}");
+        }
+    }
+
+    class Engineer : Person
+    {
+        public string Field { get; set; }
+        public int YearsOfExperience { get; set; }
+
+        // Hiding Greet
+        public new void Greet()
+        {
+            Console.WriteLine("I am an Engineer.");
+        }
+
+        // Overriding Display
+        public override void Display()
+        {
+            base.Display();
+            Console.WriteLine($"Field: {Field}, Years of Experience: {YearsOfExperience}");
+        }
+    }
+
+    // ==========================================
+    // Part 3: Interfaces
+    // ==========================================
+    interface IMoveable
+    {
+        void MoveForward();
+        void MoveBackward();
+    }
+
+    interface IFlyable
+    {
+        void MoveUp();
+        void MoveDown();
+    }
+
+    class Car : IMoveable
+    {
+        public void MoveForward() => Console.WriteLine("Car is moving forward on the road.");
+        public void MoveBackward() => Console.WriteLine("Car is moving backward on the road.");
+    }
+
+    class Ship : IMoveable
+    {
+        // Normal implementation
+        public void MoveForward() => Console.WriteLine("Ship is sailing forward on the water.");
+        
+        // Explicit implementation for Q14 demonstration
+        // void IMoveable.MoveForward() => Console.WriteLine("Ship (Explicit) is sailing forward.");
+
+        public void MoveBackward() => Console.WriteLine("Ship is sailing backward on the water.");
+    }
+
+    class Airplane : IMoveable, IFlyable
+    {
+        public void MoveForward() => Console.WriteLine("Airplane is taxiing forward on the runway.");
+        public void MoveBackward() => Console.WriteLine("Airplane is backing up.");
+        public void MoveUp() => Console.WriteLine("Airplane is flying up into the sky.");
+        public void MoveDown() => Console.WriteLine("Airplane is landing down.");
+    }
+
+    // Q13: Interface inheriting multiple interfaces
+    interface IVehicle : IMoveable, IFlyable { }
+
+    class Vehicle : IVehicle
+    {
+        public virtual void MoveForward() => Console.WriteLine("Vehicle moving forward.");
+        public virtual void MoveBackward() => Console.WriteLine("Vehicle moving backward.");
+        public virtual void MoveUp() => Console.WriteLine("Vehicle moving up.");
+        public virtual void MoveDown() => Console.WriteLine("Vehicle moving down.");
+    }
+
+    // ==========================================
+    // Program Execution (Main)
+    // ==========================================
+    class Program
+    {
+        static void ProcessPerson(Person person)
+        {
+            person.Greet();   // Resolved at compile-time (Static binding)
+            person.Display(); // Resolved at runtime (Dynamic binding)
+            Console.WriteLine("-----------------------------------");
+        }
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("=== PART 1: Static Binding ===");
+            Shape shape = new Shape(2, 3);
+            Console.WriteLine($"Shape Area: {shape.Area()}"); // Prints 6
+
+            Cube cube = new Cube(2, 3, 4);
+            Console.WriteLine($"Cube Area (hidden): {cube.Area()}"); // Prints 24
+
+            Shape shapeRef = new Cube(2, 3, 4);
+            Console.WriteLine($"Shape Ref Area: {shapeRef.Area()}"); 
+            // Prints 6 because Area() is not virtual; it resolves based on reference type (Shape), which is early binding.
+
+            object obj = new Cube(1, 2, 3);
+            Console.WriteLine($"obj.ToString(): {obj.ToString()}"); 
+            // Prints the Cube's dimensions (inherited ToString from Shape). ToString is virtual from object class, demonstrating late binding.
+
+
+            Console.WriteLine("\n=== PART 2: Dynamic Binding ===");
+            Person docRef = new Doctor { ID = 1, Name = "Alice", Age = 35, Specialty = "Cardiology" };
+            Person engRef = new Engineer { ID = 2, Name = "Bob", Age = 28, Field = "Software", YearsOfExperience = 5 };
+
+            ProcessPerson(docRef);
+            ProcessPerson(engRef);
+
+
+            Console.WriteLine("=== PART 3: Interfaces ===");
+            Car myCar = new Car();
+            myCar.MoveForward();
+
+            IMoveable carRef = new Car();
+            IMoveable planeRef = new Airplane();
+            carRef.MoveForward();
+            planeRef.MoveForward();
+
+            // planeRef.MoveUp(); // Error! IMoveable does not have MoveUp(). You need an IFlyable or Airplane reference.
+            IFlyable flyRef = (IFlyable)planeRef;
+            flyRef.MoveUp();
+
+            // Q14: Explicit interface demonstration
+            Ship myShip = new Ship();
+            myShip.MoveForward(); // Calls standard MoveForward
+            // ((IMoveable)myShip).MoveForward(); // Used if explicit implementation is active.
+
+            Console.WriteLine("\nAssignment code executed successfully!");
+        }
+    }
+}
