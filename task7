@@ -1,0 +1,294 @@
+namespace Session09.ConsoleApp;
+
+public class Patient(int id, string fullName, string phoneNumber, string medicalHistory)
+{
+    public int Id { get; set; } = id;
+    public string FullName { get; set; } = fullName;
+    public string PhoneNumber { get; set; } = phoneNumber;
+    public string MedicalHistory { get; set; } = medicalHistory;
+
+    public override string ToString()
+    {
+        return $"Id: {Id} :: FullName: {FullName} :: PhoneNumber: {PhoneNumber} :: MedicalHistory: {MedicalHistory}";
+    }
+}
+namespace Session09.ConsoleApp;
+
+// Positional record exposing Id, FullName, and PhoneNumber (sensitive MedicalHistory excluded)
+public record PatientDto(int Id, string FullName, string PhoneNumber);
+namespace Session09.ConsoleApp;
+
+public static class PatientMapper
+{
+    public static PatientDto MapFromModelToDto(Patient patient)
+    {
+        return new PatientDto(patient.Id, patient.FullName, patient.PhoneNumber);
+    }
+}
+namespace Session09.ConsoleApp;
+
+public class AppLogger
+{
+    private static AppLogger? _instance;
+    private static readonly object _lock = new();
+
+    // Private constructor prevents direct instantiation from outside
+    private AppLogger() { }
+
+    // Public static method to return the single shared instance
+    public static AppLogger GetLogger()
+    {
+        if (_instance == null)
+        {
+            lock (_lock)
+            {
+                _instance ??= new AppLogger();
+            }
+        }
+        return _instance;
+    }
+}
+namespace Session09.ConsoleApp;
+
+public static class TextHelper
+{
+    // Extension method (and bonus: normal static method converted using 'this' keyword)
+    public static bool IsShorterThan(this string value, int length)
+    {
+        if (value == null) return false;
+        return value.Length < length;
+    }
+
+    // Repeat extension method
+    public static string Repeat(this string value, int times)
+    {
+        if (string.IsNullOrEmpty(value) || times <= 0) return string.Empty;
+        return string.Concat(Enumerable.Repeat(value, times));
+    }
+}
+
+namespace Session09.ConsoleApp;
+
+public class FineCalculator
+{
+    public int Add(int a, int b) => a + b;
+    public int Subtract(int a, int b) => a - b;
+    public int Multiply(int a, int b) => a * b;
+    public int Divide(int a, int b)
+    {
+        if (b == 0)
+            throw new DivideByZeroException("Division by zero is not allowed.");
+        return a / b;
+    }
+}
+using System;
+
+namespace Session09.ConsoleApp;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("=== Part 1: Primary Constructor & Records ===");
+        // Q2. Create two Patient objects with the same values
+        Patient patient01 = new Patient(1, "John Doe", "555-0199", "Hypertension");
+        Patient patient02 = new Patient(1, "John Doe", "555-0199", "Hypertension");
+
+        // 1. Print GetHashCode() of both. Are they equal? Why?
+        Console.WriteLine($"Patient 01 HashCode: {patient01.GetHashCode()}");
+        Console.WriteLine($"Patient 02 HashCode: {patient02.GetHashCode()}");
+        // Explanation: They are NOT equal because Patient is a class (reference type) and 
+        // does not override GetHashCode(), so it falls back to object reference-based identity hashes.
+
+        // 2. Print patient01.Equals(patient02). What is the result and why?
+        Console.WriteLine($"patient01.Equals(patient02): {patient01.Equals(patient02)}");
+        // Explanation: False, because classes use reference equality by default.
+
+        // 3. Assign patient01 = patient02, then check Equals again. What changed?
+        patient01 = patient02;
+        Console.WriteLine($"After assignment, patient01.Equals(patient02): {patient01.Equals(patient02)}");
+        // Explanation: Now it is true because both variables point to the exact same reference in memory.
+
+        // Q3. Positional record PatientDto comparisons
+        PatientDto dto01 = new PatientDto(1, "John Doe", "555-0199");
+        PatientDto dto02 = new PatientDto(1, "John Doe", "555-0199");
+        Console.WriteLine($"DTO 01 HashCode: {dto01.GetHashCode()}");
+        Console.WriteLine($"DTO 02 HashCode: {dto02.GetHashCode()}");
+        Console.WriteLine($"dto01.Equals(dto02): {dto01.Equals(dto02)}");
+        /* 
+         * Comment on Difference: 
+         * Classes use reference equality by default (comparing memory references). 
+         * Records use value-based equality by default, comparing the actual values of their properties, 
+         * which is why identical record instances yield matching hash codes and evaluate to true even as separate objects.
+         */
+
+        // Q4. PatientMapper usage
+        Patient samplePatient = new Patient(2, "Jane Smith", "555-0200", "None");
+        PatientDto mappedDto = PatientMapper.MapFromModelToDto(samplePatient);
+        Console.WriteLine($"Mapped DTO: {mappedDto}");
+
+
+        Console.WriteLine("\n=== Part 2: Singleton ===");
+        // Q6. Call AppLogger.GetLogger() four times and print GetHashCode()
+        var logger1 = AppLogger.GetLogger();
+        var logger2 = AppLogger.GetLogger();
+        var logger3 = AppLogger.GetLogger();
+        var logger4 = AppLogger.GetLogger();
+
+        Console.WriteLine($"Logger 1 HashCode: {logger1.GetHashCode()}");
+        Console.WriteLine($"Logger 2 HashCode: {logger2.GetHashCode()}");
+        Console.WriteLine($"Logger 3 HashCode: {logger3.GetHashCode()}");
+        Console.WriteLine($"Logger 4 HashCode: {logger4.GetHashCode()}");
+        /*
+         * Observation: All hash codes are identical.
+         * Explanation: The Singleton pattern guarantees that only one instance of AppLogger is ever created. 
+         * Subsequent calls return that same pre-existing instance.
+         */
+
+
+        Console.WriteLine("\n=== Part 3: var & dynamic ===");
+        // Q7. var & dynamic
+        // 1. Target-typed new
+        Patient pTarget = new(3, "Alice Brown", "555-0300", "Asthma");
+        // 2. Implicit typing with var
+        var pVar = new Patient(4, "Bob Green", "555-0400", "Diabetes");
+        // 3. Dynamic variable
+        dynamic pDynamic = new Patient(5, "Charlie White", "555-0500", "None");
+        Console.WriteLine($"Dynamic Patient: {pDynamic}");
+        /*
+         * Comment on var vs dynamic:
+         * - var: Resolved at compile time (statically typed). The compiler determines the exact type 
+         *   from the right-hand side, retaining strong typing and IntelliSense.
+         * - dynamic: Resolved at run time (late-bound). Type checking and member resolution are deferred 
+         *   until execution time.
+         */
+
+
+        Console.WriteLine("\n=== Part 4: Anonymous Types ===");
+        // Q8. Anonymous objects
+        var doctor01 = new { Name = "Sara", Specialty = "Cardiology", ExperienceYears = 8, Salary = 25_000 };
+        var doctor02 = new { Name = "Sara", Specialty = "Cardiology", ExperienceYears = 8, Salary = 25_000 };
+
+        // 1. Print Name and Specialty
+        Console.WriteLine($"Doctor Name: {doctor01.Name}, Specialty: {doctor01.Specialty}");
+        // 2. GetHashCode()
+        Console.WriteLine($"Doctor01 Hash: {doctor01.GetHashCode()}, Doctor02 Hash: {doctor02.GetHashCode()}");
+        // 3. GetType()
+        Console.WriteLine($"Doctor01 Type: {doctor01.GetType()}");
+        // 4. Equals()
+        Console.WriteLine($"doctor01.Equals(doctor02): {doctor01.Equals(doctor02)}");
+        // 5. ToString()
+        Console.WriteLine($"doctor01.ToString(): {doctor01}");
+
+        /*
+         * Comment comparing equality:
+         * - Classes use reference equality by default.
+         * - Records use value equality with built-in structural comparison.
+         * - Anonymous Types automatically implement value-based structural equality, ToString, and GetHashCode 
+         *   based on their property values, behaving similarly to records while being compiled as immutable reference types.
+         */
+
+
+        Console.WriteLine("\n=== Part 5: Extension Methods ===");
+        // Q10. Call extension methods
+        bool isShort = "Stethoscope".IsShorterThan(5);
+        string repeated = "Ab".Repeat(4);
+        Console.WriteLine($"\"Stethoscope\".IsShorterThan(5): {isShort}");
+        Console.WriteLine($"\"Ab\".Repeat(4): {repeated}");
+    }
+}
+
+using Xunit;
+using Session09.ConsoleApp;
+
+namespace Session09.Tests;
+
+public class FineCalculatorTests
+{
+    private readonly FineCalculator _calculator;
+
+    public FineCalculatorTests()
+    {
+        // Initialize instance in constructor stored in a readonly field
+        _calculator = new FineCalculator();
+    }
+
+    [Fact]
+    public void Add_ShouldReturnCorrectSum()
+    {
+        // Arrange
+        int a = 10;
+        int b = 5;
+
+        // Act
+        int result = _calculator.Add(a, b);
+
+        // Assert
+        Assert.Equal(15, result);
+    }
+
+    [Fact]
+    public void Add_ShouldReturnNotEqual()
+    {
+        // Arrange
+        int a = 10;
+        int b = 5;
+
+        // Act
+        int result = _calculator.Add(a, b);
+
+        // Assert
+        Assert.NotEqual(20, result);
+    }
+
+    [Fact]
+    public void Subtract_ShouldReturnCorrectDifference()
+    {
+        // Arrange
+        int a = 10;
+        int b = 4;
+
+        // Act
+        int result = _calculator.Subtract(a, b);
+
+        // Assert
+        Assert.Equal(6, result);
+    }
+
+    [Theory]
+    [InlineData(3, 4, 12)]
+    [InlineData(5, 5, 25)]
+    [InlineData(-3, 4, -12)] // Negative number test case
+    public void Multiply_ShouldReturnCorrectResult(int a, int b, int expected)
+    {
+        // Arrange & Act
+        int result = _calculator.Multiply(a, b);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(3, 4, 99)]
+    [InlineData(-2, 3, 0)]
+    [InlineData(0, 5, 10)]
+    public void Multiply_ShouldReturnNotEqual(int a, int b, int unexpected)
+    {
+        // Arrange & Act
+        int result = _calculator.Multiply(a, b);
+
+        // Assert
+        Assert.NotEqual(unexpected, result);
+    }
+
+    [Fact]
+    public void Divide_ByZero_ShouldThrowException()
+    {
+        // Arrange
+        int a = 10;
+        int b = 0;
+
+        // Act & Assert
+        Assert.Throws<DivideByZeroException>(() => _calculator.Divide(a, b));
+    }
+}
