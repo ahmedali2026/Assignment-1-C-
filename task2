@@ -1,0 +1,238 @@
+Console.Write("Enter a number: ");
+int num = int.Parse(Console.ReadLine());
+if (num % 3 == 0 && num % 4 == 0)
+    Console.WriteLine("Yes");
+else
+    Console.WriteLine("No");
+Console.Write("Enter an integer: ");
+int num = int.Parse(Console.ReadLine());
+if (num < 0)
+    Console.WriteLine("negative");
+else
+    Console.WriteLine("positive");
+Console.Write("Enter 3 integers (separated by space or comma): ");
+var input = Console.ReadLine().Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+int a = int.Parse(input[0]);
+int b = int.Parse(input[1]);
+int c = int.Parse(input[2]);
+
+int max = Math.Max(a, Math.Max(b, c));
+int min = Math.Min(a, Math.Min(b, c));
+
+Console.WriteLine($"max element = {max}\nmin element = {min}");
+Console.Write("Enter an integer: ");
+int num = int.Parse(Console.ReadLine());
+Console.WriteLine(num % 2 == 0 ? "Even" : "Odd");
+Console.Write("Enter a character: ");
+char ch = char.ToLower(Console.ReadKey().KeyChar);
+Console.WriteLine();
+if ("aeiou".Contains(ch))
+    Console.WriteLine("vowel");
+else
+    Console.WriteLine("Consonant");
+Console.Write("Enter an integer: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 1; i <= n; i++)
+{
+    Console.Write(i + (i < n ? ", " : ""));
+}
+Console.WriteLine();
+Console.Write("Enter an integer: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 1; i <= 12; i++)
+{
+    Console.Write((n * i) + " ");
+}
+Console.WriteLine();
+Console.Write("Enter a number: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 2; i <= n; i += 2)
+{
+    Console.Write(i + " ");
+}
+Console.WriteLine();
+Console.Write("Enter base and exponent: ");
+var input = Console.ReadLine().Split();
+long b = long.Parse(input[0]);
+int exp = int.Parse(input[1]);
+long result = 1;
+
+for (int i = 0; i < exp; i++)
+{
+    result *= b;
+}
+Console.WriteLine(result);
+Console.Write("Enter Marks of five subjects: ");
+var marks = Console.ReadLine().Split().Select(int.Parse).ToArray();
+int total = marks.Sum();
+int average = total / 5;
+int percentage = total / 5;
+
+Console.WriteLine($"Total marks = {total}");
+Console.WriteLine($"Average Marks = {average}");
+Console.WriteLine($"Percentage = {percentage}");
+Console.Write("Month Number: ");
+int month = int.Parse(Console.ReadLine());
+int days = DateTime.DaysInMonth(DateTime.Now.Year, month);
+Console.WriteLine($"Days in Month: {days}");
+Console.Write("Enter num1: ");
+double num1 = double.Parse(Console.ReadLine());
+Console.Write("Enter operator (+, -, *, /): ");
+char op = char.Parse(Console.ReadLine());
+Console.Write("Enter num2: ");
+double num2 = double.Parse(Console.ReadLine());
+
+double result = op switch
+{
+    '+' => num1 + num2,
+    '-' => num1 - num2,
+    '*' => num1 * num2,
+    '/' => num2 != 0 ? num1 / num2 : throw new DivideByZeroException(),
+    _ => 0
+};
+Console.WriteLine($"Result = {result}");
+Console.Write("Enter a string: ");
+string str = Console.ReadLine();
+char[] charArray = str.ToCharArray();
+Array.Reverse(charArray);
+Console.WriteLine(new string(charArray));
+Console.Write("Enter an integer: ");
+int n = int.Parse(Console.ReadLine());
+int reversed = 0;
+while (n > 0)
+{
+    reversed = reversed * 10 + n % 10;
+    n /= 10;
+}
+Console.WriteLine(reversed);
+
+Console.Write("Input starting number of range: ");
+int start = int.Parse(Console.ReadLine());
+Console.Write("Input ending number of range: ");
+int end = int.Parse(Console.ReadLine());
+
+Console.WriteLine($"The prime numbers between {start} and {end} are:");
+for (int i = start; i <= end; i++)
+{
+    if (i < 2) continue;
+    bool isPrime = true;
+    for (int j = 2; j <= Math.Sqrt(i); j++)
+    {
+        if (i % j == 0) { isPrime = false; break; }
+    }
+    if (isPrime) Console.Write(i + " ");
+}
+Console.WriteLine();
+Console.Write("Enter a number to convert: ");
+int n = int.Parse(Console.ReadLine());
+string binary = "";
+while (n > 0)
+{
+    binary = (n % 2) + binary;
+    n /= 2;
+}
+Console.WriteLine($"The Binary is {binary}");
+// Area of triangle = 0 formula: x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2) == 0
+Console.WriteLine("Enter points (x1 y1 x2 y2 x3 y3):");
+var pts = Console.ReadLine().Split().Select(double.Parse).ToArray();
+double area = pts[0] * (pts[3] - pts[5]) + pts[2] * (pts[5] - pts[1]) + pts[4] * (pts[1] - pts[3]);
+
+if (Math.Abs(area) < 1e-9)
+    Console.WriteLine("Points lie on a single straight line.");
+else
+    Console.WriteLine("Points do not lie on a straight line.");
+Console.Write("Enter time taken to complete the task (hours): ");
+double time = double.Parse(Console.ReadLine());
+
+if (time >= 2 && time <= 3)
+    Console.WriteLine("Highly efficient");
+else if (time > 3 && time <= 4)
+    Console.WriteLine("Instructed to increase their speed");
+else if (time > 4 && time <= 5)
+    Console.WriteLine("Provided with training to enhance their speed");
+else if (time > 5)
+    Console.WriteLine("Required to leave the company");
+else
+    Console.WriteLine("Invalid time entered");
+
+Console.Write("Enter value n: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 0; i < n; i++)
+{
+    for (int j = 0; j < n; j++)
+    {
+        Console.Write((i == j ? 1 : 0) + " ");
+    }
+    Console.WriteLine();
+}
+
+Console.Write("Enter array elements separated by space: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+Console.WriteLine($"Sum = {arr.Sum()}");
+Console.Write("Enter array elements separated by space: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+Console.WriteLine($"Sum = {arr.Sum()}");
+Console.Write("Enter first sorted array: ");
+int[] arr1 = Console.ReadLine().Split().Select(int.Parse).ToArray();
+Console.Write("Enter second sorted array: ");
+int[] arr2 = Console.ReadLine().Split().Select(int.Parse).ToArray();
+
+int[] merged = arr1.Concat(arr2).OrderBy(x => x).ToArray();
+Console.WriteLine("Merged Array: " + string.Join(" ", merged));
+
+Console.Write("Enter array elements: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+foreach (var group in arr.GroupBy(x => x))
+{
+    Console.WriteLine($"Element {group.Key}: {group.Count()} times");
+}
+
+Console.Write("Enter array elements: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+Console.WriteLine($"Max = {arr.Max()}, Min = {arr.Min()}");
+
+Console.Write("Enter array elements: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+int secondLargest = arr.Distinct().OrderByDescending(x => x).Skip(1).First();
+Console.WriteLine($"Second largest = {secondLargest}");
+Console.Write("Enter array elements: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+int maxDistance = 0;
+
+for (int i = 0; i < arr.Length; i++)
+{
+    for (int j = arr.Length - 1; j > i; j--)
+    {
+        if (arr[i] == arr[j])
+        {
+            int dist = j - i - 1;
+            if (dist > maxDistance) maxDistance = dist;
+            break;
+        }
+    }
+}
+Console.WriteLine($"Longest distance = {maxDistance}");
+
+Console.Write("Enter space-separated words: ");
+string input = Console.ReadLine();
+string output = string.Join(" ", input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Reverse());
+Console.WriteLine(output);
+
+int[,] arr1 = { { 1, 2 }, { 3, 4 } };
+int[,] arr2 = new int[2, 2];
+
+for (int i = 0; i < 2; i++)
+{
+    for (int j = 0; j < 2; j++)
+    {
+        arr2[i, j] = arr1[i, j];
+        Console.Write(arr2[i, j] + " ");
+    }
+    Console.WriteLine();
+}
+
+
+Console.Write("Enter array elements: ");
+int[] arr = Console.ReadLine().Split().Select(int.Parse).ToArray();
+Array.Reverse(arr);
+Console.WriteLine("Reversed Array: " + string.Join(" ", arr));
