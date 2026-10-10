@@ -1,0 +1,73 @@
+using System;
+
+namespace Assignment1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 1- What will happen (Placeholder or general execution)
+            Console.WriteLine("=== Assignment 1 Solutions ===");
+
+            // 2- Write C# program that Extract a substring from a given string.
+            Console.WriteLine("\n--- Question 2: Extract Substring ---");
+            string originalString = "Hello, ASP.Net Course!";
+            string extracted = originalString.Substring(7, 7); // Extracts "ASP.Net"
+            Console.WriteLine($"Original: {originalString}");
+            Console.WriteLine($"Extracted Substring: {extracted}");
+
+            // 3- Assigning one value type variable to another and modifying the value
+            Console.WriteLine("\n--- Question 3: Value Type Assignment ---");
+            int a = 10;
+            int b = a; // Value is copied
+            b = 20;    // Modifying b does not affect a
+            Console.WriteLine($"Variable a: {a}");
+            Console.WriteLine($"Variable b (modified): {b}");
+            Console.WriteLine("Explanation: Value types store their data directly in the stack. Assigning 'a' to 'b' creates an independent copy.");
+
+            // 4- Assigning one reference type variable to another and modifying the object
+            Console.WriteLine("\n--- Question 4: Reference Type Assignment ---");
+            Person p1 = new Person();
+            p1.Name = "Ahmed";
+            Person p2 = p1; // Reference is copied, both point to the same object in heap
+            p2.Name = "Ali";
+            Console.WriteLine($"p1.Name: {p1.Name}");
+            Console.WriteLine($"p2.Name: {p2.Name}");
+            Console.WriteLine("Explanation: Reference types store a reference to the data. Assigning 'p1' to 'p2' copies the reference, so modifying through 'p2' affects the object pointed to by 'p1'.");
+
+            // 5- Take two string variables and print them as one variable
+            Console.WriteLine("\n--- Question 5: Concatenate Two Strings ---");
+            string firstName = "Hello";
+            string lastName = "World";
+            string combined = firstName + " " + lastName;
+            Console.WriteLine($"Combined String: {combined}");
+
+            // 6- Convert a string to an integer with non-numeric characters
+            Console.WriteLine("\n--- Question 6: Parsing Non-Numeric String ---");
+            string nonNumericStr = "123ABC";
+            try
+            {
+                int convertedValue = Convert.ToInt32(nonNumericStr);
+                Console.WriteLine(convertedValue);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Exception Caught: {ex.Message}");
+                Console.WriteLine("Explanation: Attempting to convert a string containing letters to an integer throws a FormatException because it cannot be parsed.");
+            }
+
+            // 7- Perform a simple arithmetic operation with floating-point numbers
+            Console.WriteLine("\n--- Question 7: Floating-point Arithmetic ---");
+            double num1 = 10.5;
+            double num2 = 3.2;
+            double result = num1 / num2;
+            Console.WriteLine($"Result of {num1} / {num2} = {result}");
+        }
+    }
+
+    // Helper class for Question 4
+    class Person
+    {
+        public string Name { get; set; }
+    }
+}
